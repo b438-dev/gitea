@@ -1,0 +1,3 @@
+[submodule "submodule/源代码"]
+	path = submodule/源代码
+	url = https://github.com/go-gitea/gitea
