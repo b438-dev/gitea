@@ -1,0 +1,261 @@
+配置备忘单
+这是Gitea配置文件的备忘单。它包含可配置的大多数设置及其默认值。
+
+对Gitea配置文件的任何更改都应在custom/conf/app.ini 或相应的位置进行。从分发版安装时，通常会在以下位置找到/etc/gitea/conf/app.ini。
+
+此处提供的默认值是尽力而为（不自动构建）。它们准确记录在app.ini.sample （s / master / <tag | release>）中。格式%(X)s中的任何字符串都是由ini提供的功能，用于递归读取值。
+
+包含#或;必须使用`或引用的值"""。
+
+注意：要使Gitea配置更改生效，需要完全重新启动。
+
+整体（DEFAULT）
+APP_NAME：Gitea：喝一杯茶的Git：应用程序名称，用于页面标题。
+RUN_USER：git：用户Gitea将运行为。这应该是专用系统（非用户）帐户。设置错误将导致Gitea无法启动。
+RUN_MODE：dev：出于性能和其他目的，将其更改为prod部署到生产环境时。安装过程将prod 自动设置为。[prod，dev，test]
+存储库（repository）
+ROOT：〜/ gitea-repositories /：用于存储所有存储库数据的根路径。它必须是一条绝对的道路。
+SCRIPT_TYPE：bash：此服务器支持的脚本类型，通常是这样bash，但有些用户报告只有sh可用。
+ANSI_CHARSET：<empty>：无法识别的字符集的默认字符集。
+FORCE_PRIVATE：false：强制每个新存储库都是私有的。
+DEFAULT_PRIVATE：last：创建新存储库时的默认私有。[最后，私人，公众]
+MAX_CREATION_LIMIT：-1：每个用户的存储库的全局最大创建限制， -1表示没有限制。
+PULL_REQUEST_QUEUE_LENGTH：1000：拉取请求补丁测试队列的长度，使其尽可能大。编辑此值时请小心。
+MIRROR_QUEUE_LENGTH：1000：补丁测试队列长度，如果拉请求补丁测试开始挂起则增加。
+PREFERRED_LICENSES：Apache License 2.0，MIT许可证：放置在列表顶部的首选许可证。名称必须与conf / license或custom / conf / license中的文件名匹配。
+DISABLE_HTTP_GIT：false：禁用通过HTTP协议与存储库交互的功能。
+USE_COMPAT_SSH_URI：false：当使用默认SSH端口时，强制使用ssh：// clone url而不是scp-style uri。
+ACCESS_CONTROL_ALLOW_ORIGIN：<empty>：Access-Control-Allow-Origin标头的值，默认不显示。警告：如果您没有给它正确的值，这可能对您的网站有害。
+存储库 - Pull Request（repository.pull-request）
+WORK_IN_PROGRESS_PREFIXES：WIP：，[WIP]：Pull Request标题中使用的前缀列表，用于将其标记为Work In Progress
+UI（ui）
+EXPLORE_PAGING_NUM：20：一个探索页面中显示的存储库数量。
+ISSUE_PAGING_NUM：10：一页中显示的问题数（对于列出问题的所有页面）。
+FEED_MAX_COMMIT_NUM：5：一个活动源中显示的最大提交数。
+GRAPH_MAX_COMMIT_NUM：100：提交图中显示的最大提交数。
+DEFAULT_THEME：gitea：[gitea，arc-green]：设置Gitea安装的默认主题。
+THEMES： gitea，arc-green：所有主题。允许用户选择个性化主题，无论其价值如何DEFAULT_THEME。
+UI - Admin（ui.admin）
+USER_PAGING_NUM：50：一页中显示的用户数。
+REPO_PAGING_NUM：50：一页显示的回购数量。
+NOTICE_PAGING_NUM：25：一页显示的通知数。
+ORG_PAGING_NUM：50：一页显示的组织数。
+Markdown（markdown）
+ENABLE_HARD_LINE_BREAK：false：启用Markdown的硬换行符扩展名。
+服务器（server）
+PROTOCOL：http：[http，https，fcgi，unix]
+DOMAIN：localhost：此服务器的域名。
+ROOT_URL：％（PROTOCOL）s：//％（DOMAIN）s：％（HTTP_PORT）s /：覆盖自动生成的公共URL。如果内部和外部URL不匹配（例如在Docker中），这将非常有用。
+HTTP_ADDR：0.0.0.0：HTTP侦听地址。
+如果PROTOCOL设置为fcgi，Gitea将监听由TCP套接字定义的FastCGI请求HTTP_ADDR和HTTP_PORT配置设置。
+如果PROTOCOL设置为unix，则应该是要使用的Unix套接字文件的名称。
+HTTP_PORT：3000：HTTP侦听端口。
+如果PROTOCOL设置为fcgi，Gitea将监听由TCP套接字定义的FastCGI请求HTTP_ADDR和HTTP_PORT配置设置。
+UNIX_SOCKET_PERMISSION：666：Unix套接字的权限。
+LOCAL_ROOT_URL：％（PROTOCOL）s：//％（HTTP_ADDR）s：％（HTTP_PORT）s /：访问Web服务的Gitea工作者（例如SSH更新）的本地（DMZ）URL。在大多数情况下，您无需更改默认值。仅当您的SSH服务器节点与HTTP节点不同时才更改它。如果PROTOCOL设置为，请不要设置此变量unix。
+DISABLE_SSH：false：当SSH功能不可用时，禁用它。
+START_SSH_SERVER：false：启用时，使用内置SSH服务器。
+SSH_DOMAIN：％（DOMAIN）s：此服务器的域名，用于显示的克隆URL。
+SSH_PORT：22：克隆URL中显示的SSH端口。
+SSH_LISTEN_PORT：％（SSH_PORT）s：内置SSH服务器的端口。
+OFFLINE_MODE：false：禁用对静态文件使用CDN，对配置文件图片禁用Gravatar。
+DISABLE_ROUTER_LOG：false：静音打印路由器日志。
+CERT_FILE：custom / https / cert.pem：用于HTTPS的证书文件路径。
+KEY_FILE：custom / https / key.pem：用于HTTPS的密钥文件路径。
+STATIC_ROOT_PATH：./：模板和静态文件路径的上层。
+ENABLE_GZIP：false：启用应用程序级GZIP支持。
+LANDING_PAGE：home：未经身份验证的用户登陆页面[主页，探索]。
+LFS_START_SERVER：false：启用git-lfs支持。
+LFS_CONTENT_PATH：./ data / fs：存储LFS文件的位置。
+LFS_JWT_SECRET：<empty>：LFS身份验证机密，更改此唯一字符串。
+LFS_HTTP_AUTH_EXPIRY：20m：LFS验证有效期及时。持续时间超过此时间可能会失败。
+REDIRECT_OTHER_PORT：false：如果为true且PROTOCOL为https，则允许将http请求重定向PORT_TO_REDIRECT到Gitea侦听的https端口。
+PORT_TO_REDIRECT：80：侦听http重定向服务的端口。如果REDIRECT_OTHER_PORT是真的则使用。
+ENABLE_LETSENCRYPT：false：如果启用，则必须设置DOMAIN为有效的面向Internet的域（确保设置DNS并且letsencrypt验证服务器可以访问端口80）。使用Lets Encrypt，您必须同意其服务条款。
+LETSENCRYPT_ACCEPTTOS：false：这是一个明确的检查，表明您接受Let's Encrypt的服务条款。
+LETSENCRYPT_DIRECTORY：https：Letsencrypt将用于缓存证书和私钥等信息的目录。
+LETSENCRYPT_EMAIL：email@example.com : Letsencrypt使用的电子邮件，用于通知已颁发证书的问题。（没有默认值）
+数据库（database）
+DB_TYPE：mysql：正在使用的数据库类型[mysql，postgres，mssql，sqlite3]。
+HOST：127.0.0.1 : 3306：数据库主机地址和端口。
+NAME：gitea：数据库名称。
+USER：root：数据库用户名。
+PASSWD：<empty>：数据库用户密码。如果您在密码中使用特殊字符，请使用“您的密码”进行引用。
+SSL_MODE：disable：仅适用于PostgreSQL和MySQL。
+PATH：data / gitea.db：仅适用于SQLite3，数据库文件路径。
+LOG_SQL：true：记录执行的SQL。
+DB_RETRIES：10：允许多少ORM init / DB连接尝试。
+DB_RETRY_BACKOFF：* 3s：time.Duration在尝试另一次ORM init / DB连接尝试之前等待，如果发生故障。
+索引器（indexer）
+ISSUE_INDEXER_PATH：indexers / issues.bleve：用于问题搜索的索引文件。
+REPO_INDEXER_ENABLED：false：启用代码搜索（使用大量磁盘空间）。
+REPO_INDEXER_PATH：indexers / repos.bleve：用于代码搜索的索引文件。
+UPDATE_BUFFER_LEN：20：索引请求的缓冲区长度。
+MAX_FILE_SIZE：1048576：要索引的文件的最大大小（以字节为单位）。
+安全（security）
+INSTALL_LOCK：false：禁止访问安装页面。
+SECRET_KEY：<每次安装时随机>：全局密钥。这应该改变。
+LOGIN_REMEMBER_DAYS：7：Cookie生命周期，以天为单位。
+COOKIE_USERNAME：gitea_awesome：用于存储当前用户名的cookie的名称。
+COOKIE_REMEMBER_NAME：gitea_incredible：用于存储身份验证信息的cookie的名称。
+REVERSE_PROXY_AUTHENTICATION_USER：X-WEBAUTH-USER：反向代理身份验证的标头名称。
+REVERSE_PROXY_AUTHENTICATION_EMAIL：X-WEBAUTH-EMAIL：反向代理身份验证的头名称提供了电子邮件。
+DISABLE_GIT_HOOKS：false：设置为true阻止所有用户（包括管理员）创建自定义git挂钩。
+IMPORT_LOCAL_PATHS：false：设置为false阻止所有用户（包括管理员）导入服务器上的本地路径。
+OpenID（openid）
+ENABLE_OPENID_SIGNIN：false：允许通过OpenID进行身份验证。
+ENABLE_OPENID_SIGNUP：！DISABLE_REGISTRATION：允许通过OpenID注册。
+WHITELISTED_URIS：<empty>：如果非空，则允许与OpenID URI匹配的POSIX正则表达式模式列表。
+BLACKLISTED_URIS：<empty>：如果非空，则匹配OpenID URI的POSIX正则表达式模式列表将被阻止。
+服务（service）
+ACTIVE_CODE_LIVE_MINUTES：180：确认帐户/电子邮件注册的时间限制（分钟）。
+RESET_PASSWD_CODE_LIVE_MINUTES：180：确认忘记密码重置过程的时间限制（分钟）。
+REGISTER_EMAIL_CONFIRM：false：启用此选项以要求邮件确认注册。需要Mailer启用。
+DISABLE_REGISTRATION：false：禁用注册，之后只有管理员可以为用户创建帐户。
+REQUIRE_SIGNIN_VIEW：false：启用此选项以强制用户登录以查看任何页面。
+ENABLE_NOTIFY_MAIL：false：启用此选项可在发生某些事件时向存储库的观察者发送电子邮件，例如创建问题。需要Mailer启用。
+ENABLE_REVERSE_PROXY_AUTHENTICATION：false：启用此选项以允许反向代理身份验证。
+ENABLE_REVERSE_PROXY_AUTO_REGISTRATION：false：启用此选项以允许自动注册以进行反向身份验证。
+ENABLE_REVERSE_PROXY_EMAIL：false：启用此选项以允许使用提供的电子邮件而不是生成的电子邮件进行自动注册。
+ENABLE_CAPTCHA：false：启用此选项以使用验证码验证进行注册。
+CAPTCHA_TYPE：image：[image，recaptcha]
+RECAPTCHA_SECRET：“”：访问https://www.google.com/recaptcha/admin获取recaptcha的秘密。
+RECAPTCHA_SITEKEY：“”：转到https://www.google.com/recaptcha/admin获取recaptcha的sitekey。
+DEFAULT_ENABLE_DEPENDENCIES：true启用此选项以默认启用依赖项。
+ENABLE_USER_HEATMAP：true启用此选项可在用户配置文件上显示热图。
+EMAIL_DOMAIN_WHITELIST：<empty>：如果非空，则只能用于在此实例上注册的域名列表。
+SHOW_REGISTRATION_BUTTON：！DISABLE_REGISTRATION：显示注册按钮
+AUTO_WATCH_NEW_REPOS：true启用此选项可让所有组织用户在创建新的repos时观察它们
+Webhook（webhook）
+QUEUE_LENGTH：1000：挂钩任务队列长度。编辑此值时请小心。
+DELIVER_TIMEOUT：5：拍摄webhooks的传送超时（秒）。
+SKIP_TLS_VERIFY：false：允许不安全的认证。
+PAGING_NUM：10：一页显示的webhook历史事件数。
+梅勒（mailer）
+ENABLED：false：启用以使用邮件服务。
+DISABLE_HELO：<empty>：禁用HELO操作。
+HELO_HOSTNAME：<empty>：HELO操作的自定义主机名。
+HOST：<empty>：SMTP邮件主机地址和端口（例如：smtp.gitea.io：587）。
+FROM：<empty>：来自地址的邮件，RFC 5322.这可以只是一个电子邮件地址，也可以是“Name”<email@example.com>格式。
+USER：<empty>：邮件用户的用户名（通常是发件人的电子邮件地址）。
+PASSWD：<empty>：邮件用户的密码。如果您在密码中使用特殊字符，请使用“您的密码”进行引用。
+SKIP_VERIFY：<empty>：不验证自签名证书。
+注意： Gitea仅支持使用STARTTLS的SMTP。
+MAILER_TYPE：smtp：[smtp，sendmail，dummy]
+smtp使用SMTP发送邮件
+sendmail使用操作系统的sendmail命令而不是SMTP。这在linux系统上很常见。
+dummy将电子邮件作为测试阶段发送到日志。
+请注意，启用的sendmail会忽略所有其他mailer除设置ENABLED， FROM和SENDMAIL_PATH。
+启用虚拟将忽略除ENABLED和之外的所有设置FROM。
+SENDMAIL_PATH：sendmail：操作系统上sendmail的位置（可以是命令或完整路径）。
+IS_TLS_ENABLED： false：确定SMTP连接是否应使用TLS。
+缓存（cache）
+ADAPTER：内存：缓存引擎适配器，或者memory，redis或者memcache。
+INTERVAL：60：垃圾收集间隔（秒），仅用于内存缓存。
+HOST：<空>：用于连接字符串redis和memcache。
+Redis的： network=tcp,addr=127.0.0.1:6379,password=macaron,db=0,pool_size=100,idle_timeout=180
+Memache： 127.0.0.1:9090;127.0.0.1:9091
+会话（session）
+PROVIDER：memory：会话引擎提供程序[memory，file，redis，mysql]。
+PROVIDER_CONFIG：data / sessions：对于文件，根路径; 对于其他人，连接字符串。
+COOKIE_SECURE：false：启用此选项以强制使用HTTPS进行所有会话访问。
+COOKIE_NAME：i_like_gitea：用于会话ID的cookie的名称。
+GC_INTERVAL_TIME：86400：GC间隔（秒）。
+图片（picture）
+GRAVATAR_SOURCE：gravatar：可以gravatar，duoshuo或类似的东西 http://cn.gravatar.com/avatar/。
+DISABLE_GRAVATAR：false：启用此选项仅使用本地头像。
+ENABLE_FEDERATED_AVATAR：false：启用对联合头像的支持（请参阅 http://www.libravatar.org）。
+AVATAR_UPLOAD_PATH：data / avatars：存储本地和缓存文件的路径。
+附件（attachment）
+ENABLED：true：启用此选项以允许上载附件。
+PATH：data / attachments：存储附件的路径。
+ALLOWED_TYPES：请参阅app.ini.sample：允许的MIME类型，例如image/jpeg|image/png。使用*/*所有类型。
+MAX_SIZE：4：最大尺寸（MB）。
+MAX_FILES：5：一次可以上传的最大附件数。
+记录（log）
+ROOT_PATH：<empty>：日志文件的根路径。
+MODE：console：记录模式。对于多种模式，请使用逗号分隔值。
+LEVEL：跟踪：常规日志级别。[跟踪，调试，信息，警告，错误，严重]
+Cron（cron）
+ENABLED：true：定期运行cron任务。
+RUN_AT_START：false：在应用程序启动时运行cron任务。
+Cron - 清理旧存储库档案（cron.archive_cleanup）
+ENABLED：true：启用服务。
+RUN_AT_START：true：在启动时运行任务（如果已启用）。
+SCHEDULE：@every 24h：用于调度存储库归档清理的Cron语法，例如@every 1h。
+OLDER_THAN：24h：比OLDER_THAN以前创建的档案可能会被删除，例如12h。
+Cron - 更新镜像（cron.update_mirrors）
+SCHEDULE：@every 10m：用于调度更新镜像的Cron语法，例如@every 3h。
+Cron - 存储库健康检查（cron.repo_health_check）
+SCHEDULE：每24小时：用于调度存储库运行状况检查的Cron语法。
+TIMEOUT：60s：运行状况检查执行超时的持续时间语法。
+ARGS：<empty>：命令的参数git fsck，例如--unreachable --tags。有关更多信息，请访问http://git-scm.com/docs/git-fsck
+Cron - 存储库统计检查（cron.check_repo_stats）
+RUN_AT_START：true：在开始时运行存储库统计信息检查。
+SCHEDULE：@every 24h：用于调度存储库统计信息检查的Cron语法。
+Git（git）
+MAX_GIT_DIFF_LINES：100：差异视图中单个文件允许的最大行数。
+MAX_GIT_DIFF_LINE_CHARACTERS：5000：差异视图中突出显示的每行最大字符数。
+MAX_GIT_DIFF_FILES：100：差异视图中显示的最大文件数。
+GC_ARGS：<empty>：命令的参数git gc，例如--aggressive --auto。有关更多信息，请访问http://git-scm.com/docs/git-gc/
+Git - 超时设置（git.timeout）
+MIGRATE：600：迁移外部存储库超时秒。
+MIRROR：300：镜像外部存储库超时秒。
+CLONE：300：Git克隆来自内部存储库超时秒。
+PULL：300：Git从内部存储库拉出超时秒。
+GC：60：Git存储库GC超时秒。
+指标（metrics）
+ENABLED：false：启用prometheus的/ metrics端点。
+TOKEN：<empty>：如果要在授权中包含指标，则需要指定令牌。需要在prometheus参数中使用相同的标记bearer_token或bearer_token_file。
+API（api）
+ENABLE_SWAGGER：true：启用/ api / swagger，/ api / v1 / swagger等端点。对或错; 默认为true。
+MAX_RESPONSE_ITEMS：50：页面中的最大项目数。
+DEFAULT_PAGING_NUM：30：api的默认分页号。
+i18n（i18n）
+LANGS：en-US，zh-CN，zh-HK，zh-TW，de-DE，fr-FR，nl-NL，lv-LV，ru-RU，ja-JP，es-ES，pt-BR，pl -PL，bg-BG，it-IT，fi-FI，tr-TR，cs-CZ，sr-SP，sv-SE，ko-KR：语言选择器中显示的语言环境列表
+NAMES：English，简体中文，繁体中文（香港），繁体中文（台湾），Deutsch，français，Nederlands，latviešu，русский，日本语，español，portuguêsdoBrasil，polski，български，italiano，suomi，Türkçe，čeština，српски ，svenska，한국어：对应于区域设置的可见名称
+i18n - Datepicker语言（i18n.datelang）
+将语言环境映射到datepicker插件使用的语言
+
+en-US：恩
+zh-CN：zh
+zh-HK：zh-HK
+zh-TW：zh-TW
+de-DE：德
+fr-FR：fr
+nl-NL：nl
+lv-LV：lv
+ru-RU：ru
+ja-JP：ja
+es-ES：es
+pt-BR：pt-BR
+pl-PL：pl
+bg-BG：bg
+it-IT：它
+fi-FI：fi
+tr-TR：tr
+cs-CZ：cs-CZ
+sr-SP：sr
+sv-SE：sv
+ko-KR：ko
+U2F（U2F）
+APP_ID:: ROOT_URL声明应用程序的方面。需要HTTPS。
+TRUSTED_FACETS：受信任的其他方面的列表。并非所有浏览器都支持此功能。
+标记（markup）
+Gitea可以使用外部工具支持Markup。下面的示例将添加一个名为的标记asciidoc。
+
+[markup.asciidoc]
+ENABLED = false
+FILE_EXTENSIONS = .adoc,.asciidoc
+RENDER_COMMAND = "asciidoc --out-file=- -"
+IS_INPUT_FILE = false
+ENABLED：false启用标记支持。
+FILE_EXTENSIONS：<empty>应由外部命令呈现的文件扩展名列表。多个扩展需要逗号作为拆分器。
+RENDER_COMMAND：用于呈现所有匹配扩展的外部命令。
+IS_INPUT_FILE：false输入不是标准输入，而是后面的文件参数RENDER_COMMAND。
+将两个特殊环境变量传递给render命令： - GITEA_PREFIX_SRC，其中包含src路径树中的当前URL前缀。用作链接的前缀。- GITEA_PREFIX_RAW，包含raw路径树中的当前URL前缀。用作图像路径的前缀。
+
+其他（other）
+SHOW_FOOTER_BRANDING：false：在页脚中显示Gitea品牌。
+SHOW_FOOTER_VERSION：true：在页脚中显示Gitea版本信息。
+SHOW_FOOTER_TEMPLATE_LOAD_TIME：true：在页脚中显示模板执行的时间。
