@@ -1,0 +1,41 @@
+自定义文件渲染配置
+Gitea通过外部二进制文件支持自定义文件渲染（即Jupyter笔记本，asciidoc等），它只需要：*安装外部二进制文件*为app.ini文件添加一些配置*重启你的gitea实例
+
+安装外部二进制文件
+为了通过外部二进制文件进行文件呈现，必须安装其关联的包。如果您使用的是Docker镜像，那么您Dockerfile应该包含以下内容：
+
+FROM gitea/gitea:1.6.0
+[...]
+
+COPY custom/app.ini /data/gitea/conf/app.ini
+[...]
+
+RUN apk --no-cache add asciidoctor freetype freetype-dev gcc g++ libpng python-dev py-pip python3-dev py3-pip
+# install any other package you need for your external renderers
+
+RUN pip3 install --upgrade pip
+RUN pip3 install -U setuptools
+RUN pip3 install jupyter matplotlib docutils
+# add above any other python package you may need to install
+app.ini 文件配置
+[markup.XXXXX]在自定义上为每个外部渲染器添加一个部分app.ini：
+
+[markup.asciidoc]
+ENABLED = true
+FILE_EXTENSIONS = .adoc,.asciidoc
+RENDER_COMMAND = "asciidoctor --out-file=- -"
+; Input is not a standard input but a file
+IS_INPUT_FILE = false
+
+[markup.jupyter]
+ENABLED = true
+FILE_EXTENSIONS = .ipynb
+RENDER_COMMAND = "jupyter nbconvert --stdout --to html --template basic "
+IS_INPUT_FILE = true
+
+[markup.restructuredtext]
+ENABLED = true
+FILE_EXTENSIONS = .rst
+RENDER_COMMAND = rst2html.py
+IS_INPUT_FILE = false
+完成配置更改后，重新启动Gitea以使更改生效。
